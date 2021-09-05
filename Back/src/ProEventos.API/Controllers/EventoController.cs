@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using ProEventos.API.Data;
 using ProEventos.API.Models;
 
 namespace ProEventos.API.Controllers
@@ -12,11 +13,7 @@ namespace ProEventos.API.Controllers
     [Route("api/[controller]")]
     public class EventoController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-            public Evento[] _evento = new Evento[]{
+        public Evento[] _evento = new Evento[]{
                 new Evento()
                 {
                     EventoId = 1,
@@ -26,7 +23,7 @@ namespace ProEventos.API.Controllers
                     QtdPessoas = 250,
                     DataEvento = DateTime.Now.AddDays(2).ToString("dd/MM/yyyy"),
                     ImagemURL = "foto.jpeg"
-                },                
+                },
                 new Evento()
                 {
                     EventoId = 1,
@@ -38,21 +35,22 @@ namespace ProEventos.API.Controllers
                     ImagemURL = "foto.jpeg"
                 }
             };
-        public EventoController(ILogger<EventoController> logger)
+        private readonly DataContext _context;
+        public EventoController(DataContext context)
         {
-            
+            _context = context;
         }
 
         [HttpGet]
         public IEnumerable<Evento> Get()
         {
-            return _evento;
+            return _context.Eventos;
         }
 
         [HttpGet("{Id}")]
-        public IEnumerable<Evento> GetById(int Id)
+        public Evento GetById(int Id)
         {
-            return _evento.Where(c => c.EventoId == Id);
+            return _context.Eventos.FirstOrDefault(c => c.EventoId == Id);
         }
     }
 }
